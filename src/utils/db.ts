@@ -4,7 +4,6 @@ interface MyDB extends DBSchema {
   stories: {
     key: string;
     value: {
-      prompt: string;
       story: string;
       videoUrl: string;
       timestamp: number;
@@ -18,11 +17,10 @@ const dbPromise = openDB<MyDB>('StoryDB', 1, {
   },
 });
 
-export async function saveStory(prompt: string, story: string, videoUrl: string) {
+export async function saveStory(story: string, videoUrl: string) {
   const db = await dbPromise;
   const timestamp = Date.now();
   await db.put('stories', {
-    prompt,
     story,
     videoUrl,
     timestamp,
