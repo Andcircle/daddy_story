@@ -16,67 +16,67 @@ const VideoGenerator: React.FC<VideoGeneratorProps> = ({ story, setVideoUrl }) =
     setError(null)
     try {
       console.log('Sending request to HeyGen API...')
-      // const truncatedStory = story.slice(0, 1990) + (story.length > 1990 ? '...' : '')
-      // const payload = {
-      //   video_inputs: [
-      //     {
-      //       character: {
-      //         type: "avatar",
-      //         avatar_id: "175bbfcd0b2e4b7b90d1588a7a815a50",
-      //         avatar_style: "normal"
-      //       },
-      //       voice: {
-      //         type: "text",
-      //         input_text: truncatedStory,
-      //         voice_id: "102c45689f6a437f81b3b61d3e7ece82"
-      //       },
-      //       background: {
-      //         type: "color",
-      //         value: "#E6E6FA" // Light lavender color
-      //       }
-      //     }
-      //   ],
-      //   dimension: {
-      //     width: 1280,
-      //     height: 720
-      //   },
-      //   aspect_ratio: "16:9",
-      //   test: false // Set to true for testing, false for production
-      // }
+      const truncatedStory = story.slice(0, 1990) + (story.length > 1990 ? '...' : '')
+      const payload = {
+        video_inputs: [
+          {
+            character: {
+              type: "avatar",
+              avatar_id: "175bbfcd0b2e4b7b90d1588a7a815a50",
+              avatar_style: "normal"
+            },
+            voice: {
+              type: "text",
+              input_text: truncatedStory,
+              voice_id: "102c45689f6a437f81b3b61d3e7ece82"
+            },
+            background: {
+              type: "color",
+              value: "#E6E6FA" // Light lavender color
+            }
+          }
+        ],
+        dimension: {
+          width: 1280,
+          height: 720
+        },
+        aspect_ratio: "16:9",
+        test: false // Set to true for testing, false for production
+      }
 
-      // const response = await fetch('https://api.heygen.com/v2/video/generate', {
-      //   method: 'POST',
-      //   headers: {
-      //     'X-Api-Key': import.meta.env.VITE_HEYGEN_API_KEY,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify(payload)
-      // })
+      const response = await fetch('https://api.heygen.com/v2/video/generate', {
+        method: 'POST',
+        headers: {
+          'X-Api-Key': import.meta.env.VITE_HEYGEN_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
       
-      // console.log('Response received:', response.status, response.statusText)
+      console.log('Response received:', response.status, response.statusText)
       
-      // if (!response.ok) {
-      //   const errorData = await response.json()
-      //   console.error('API Error:', errorData)
-      //   if (errorData.error && errorData.error.code === 'trial_video_limit_exceeded') {
-      //     throw new Error('Daily API trial limit exceeded. Please try again tomorrow.')
-      //   }
-      //   throw new Error(`API error: ${response.status} ${response.statusText}`)
-      // }
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('API Error:', errorData)
+        if (errorData.error && errorData.error.code === 'trial_video_limit_exceeded') {
+          throw new Error('Daily API trial limit exceeded. Please try again tomorrow.')
+        }
+        throw new Error(`API error: ${response.status} ${response.statusText}`)
+      }
       
-      // const data = await response.json()
-      // console.log('API Response:', data)
+      const data = await response.json()
+      console.log('API Response:', data)
       
-      // if (!data.data || !data.data.video_id) {
-      //   throw new Error('Unexpected API response format: missing video_id')
-      // }
+      if (!data.data || !data.data.video_id) {
+        throw new Error('Unexpected API response format: missing video_id')
+      }
 
-      const test_id = '2fd0ff11fde446d69589e293cb019a56'
-      
-      // setVideoId(data.data.video_id)
-      // await checkVideoStatus(data.data.video_id)
-      setVideoId(test_id)
-      await checkVideoStatus(test_id)
+      setVideoId(data.data.video_id)
+      await checkVideoStatus(data.data.video_id)
+
+      // const test_id = '2fd0ff11fde446d69589e293cb019a56'
+      // setVideoId(test_id)
+      // await checkVideoStatus(test_id)
     } catch (error) {
       console.error('Error generating video:', error)
       setError(`Failed to generate video: ${error instanceof Error ? error.message : 'Unknown error'}`)

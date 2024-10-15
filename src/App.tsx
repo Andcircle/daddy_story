@@ -1,58 +1,76 @@
-import React, { useState, useEffect } from 'react'
-import { Book, Video } from 'lucide-react'
-import StoryGenerator from './components/StoryGenerator'
-import VideoGenerator from './components/VideoGenerator'
-import { saveStory, getAllStories } from './utils/db'
+import React, { useState, useEffect } from 'react';
+import { Book, Video, Clock } from 'lucide-react';
+import StoryGenerator from './components/StoryGenerator';
+import VideoGenerator from './components/VideoGenerator';
+import { saveStory, getAllStories } from './utils/db';
 
 function App() {
-  const [story, setStory] = useState('')
-  const [videoUrl, setVideoUrl] = useState('')
-  const [savedStories, setSavedStories] = useState<Array<{ prompt: string; story: string; videoUrl: string }>>([])
+  const [story, setStory] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [savedStories, setSavedStories] = useState<
+    Array<{
+      prompt: string;
+      story: string;
+      videoUrl: string;
+      timestamp: number;
+    }>
+  >([]);
 
   const removeTitle = (text: string) => {
-    return text.replace(/(title|Title):?\s*|\*/gi, '').trim()
-  }
+    return text.replace(/(title|Title):?\s*|\*/gi, '').trim();
+  };
 
   useEffect(() => {
-    loadSavedStories()
-  }, [])
+    loadSavedStories();
+  }, []);
 
   const loadSavedStories = async () => {
     try {
-      const stories = await getAllStories()
-      setSavedStories(stories)
+      const stories = await getAllStories();
+      setSavedStories(stories);
     } catch (error) {
-      console.error('Error loading saved stories:', error)
+      console.error('Error loading saved stories:', error);
     }
-  }
+  };
 
-  const handleStoryGenerated = async (newStory: string, prompt: string) => {
-    setStory(newStory)
-    if (videoUrl) {
-      try {
-        await saveStory(prompt, newStory, videoUrl)
-        await loadSavedStories()
-      } catch (error) {
-        console.error('Error saving story:', error)
-      }
-    }
-  }
+  const handleStoryGenerated = async (newStory: string) => {
+    setStory(newStory);
+    // if (videoUrl) {
+    //   try {
+    //     await saveStory(prompt, newStory, videoUrl);
+    //     await loadSavedStories();
+    //   } catch (error) {
+    //     console.error('Error saving story:', error);
+    //   }
+    // }
+  };
 
   const handleVideoGenerated = async (newVideoUrl: string) => {
-    setVideoUrl(newVideoUrl)
+    setVideoUrl(newVideoUrl);
     if (story) {
       try {
-        await saveStory('', story, newVideoUrl) // Using an empty string as prompt for now
-        await loadSavedStories()
+        await saveStory(story, newVideoUrl);
+        await loadSavedStories();
       } catch (error) {
-        console.error('Error saving story with video:', error)
+        console.error('Error saving story with video:', error);
       }
     }
-  }
+  };
+
+  const handleLoadSavedStory = (savedStory: {
+    prompt: string;
+    story: string;
+    videoUrl: string;
+  }) => {
+    setStory(savedStory.story);
+    setVideoUrl(savedStory.videoUrl);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold text-purple-600 mb-8">Daddy's Bedtime Story</h1>
+      <h1 className="text-4xl font-bold text-purple-600 mb-8">
+        Daddy's Bedtime Story
+      </h1>
       <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
         <StoryGenerator setStory={handleStoryGenerated} />
         {story && (
@@ -63,7 +81,9 @@ function App() {
             <p className="mt-2 text-gray-700 whitespace-pre-wrap">{story}</p>
           </div>
         )}
-        {story && <VideoGenerator story={story} setVideoUrl={handleVideoGenerated} />}
+        {story && (
+          <VideoGenerator story={story} setVideoUrl={handleVideoGenerated} />
+        )}
         {videoUrl && (
           <div className="mt-6">
             <h2 className="text-2xl font-semibold text-purple-600 flex items-center">
@@ -76,11 +96,25 @@ function App() {
         )}
         {savedStories.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-2xl font-semibold text-purple-600">Saved Stories</h2>
+            <h2 className="text-2xl font-semibold text-purple-600">
+              Saved Stories
+            </h2>
             <ul className="mt-2 space-y-2">
               {savedStories.map((savedStory, index) => (
-                <li key={index} className="text-gray-700">
-                  <strong>{'Title'}</strong>: {removeTitle(savedStory.story).substring(0, 50)}...
+                <li
+                  key={index}
+                  className="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded transition duration-200"
+                  onClick={() => handleLoadSavedStory(savedStory)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>
+                      {removeTitle(savedStory.story).substring(0, 50)}...
+                    </span>
+                    <span className="text-sm text-gray-500 flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {new Date(savedStory.timestamp).toLocaleString()}
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -88,7 +122,7 @@ function App() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
