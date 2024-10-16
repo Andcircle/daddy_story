@@ -9,6 +9,7 @@ function App() {
   const [videoUrl, setVideoUrl] = useState('');
   const [savedStories, setSavedStories] = useState<
     Array<{
+      id: string;
       prompt: string;
       story: string;
       videoUrl: string;
@@ -37,7 +38,7 @@ function App() {
     setStory(newStory);
     // if (videoUrl) {
     //   try {
-    //     await saveStory(prompt, newStory, videoUrl);
+    //     await saveStory(newStory, videoUrl);
     //     await loadSavedStories();
     //   } catch (error) {
     //     console.error('Error saving story:', error);
@@ -58,6 +59,7 @@ function App() {
   };
 
   const handleLoadSavedStory = (savedStory: {
+    id: string;
     prompt: string;
     story: string;
     videoUrl: string;
@@ -100,9 +102,9 @@ function App() {
               Saved Stories
             </h2>
             <ul className="mt-2 space-y-2">
-              {savedStories.map((savedStory, index) => (
+              {savedStories.map((savedStory) => (
                 <li
-                  key={index}
+                  key={savedStory.id}
                   className="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded transition duration-200"
                   onClick={() => handleLoadSavedStory(savedStory)}
                 >

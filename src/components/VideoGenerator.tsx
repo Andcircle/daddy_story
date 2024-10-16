@@ -75,6 +75,7 @@ const VideoGenerator: React.FC<VideoGeneratorProps> = ({ story, setVideoUrl }) =
       await checkVideoStatus(data.data.video_id)
 
       // const test_id = '2fd0ff11fde446d69589e293cb019a56'
+
       // setVideoId(test_id)
       // await checkVideoStatus(test_id)
     } catch (error) {
